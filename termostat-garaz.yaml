@@ -1,0 +1,8 @@
+substitutions:
+  name: thermostat03
+  friendly_name: Termostat-Garaz
+  board: esp01_1m # oryginalny TYWE3S; sprawdź board w obecnym YAML-u przed wgraniem
+  status_pin_inverted: "true"
+
+packages:
+  me81h: !include common/me81h.yaml
