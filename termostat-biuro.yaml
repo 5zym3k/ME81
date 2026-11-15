@@ -1,8 +1,0 @@
-substitutions:
-  name: thermostat13
-  friendly_name: Termostat-Biuro
-  board: esp12e # moduł wymieniony na ESP-12F
-  status_pin_inverted: "false"
-
-packages:
-  me81h: !include common/me81h.yaml

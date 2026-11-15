@@ -8,12 +8,20 @@ Konfiguracja ESPHome dla termostatów ME81H (Tuya MCU, produkt `gogb05wrtredz3bs
 |---|---|
 | `common/me81h.yaml` | wspólna konfiguracja (package) |
 | `common/secrets.yaml` | przekierowanie do `../secrets.yaml`; `!secret` w pakiecie szuka sekretów w katalogu pakietu |
-| `termostat-biuro.yaml` | thermostat13, moduł ESP-12F |
-| `termostat-garaz.yaml` | thermostat03, oryginalny TYWE3S |
-| `termostat04.yaml` | thermostat04 (gospodarcze), oryginalny TYWE3S |
 | `secrets.yaml.example` | wzór sekretów, skopiuj do `secrets.yaml` |
 
-Nowy termostat to nowy plik z czterema `substitutions` (`name`, `friendly_name`, `board`, `status_pin_inverted`) i include'em pakietu.
+Każdy termostat to krótki plik obok katalogu `common/`, np. `termostat-salon.yaml`:
+
+```yaml
+substitutions:
+  name: thermostat01
+  friendly_name: Termostat-Salon
+  board: esp01_1m              # TYWE3S: esp01_1m, ESP-12F: esp12e
+  status_pin_inverted: "true"  # TYWE3S: "true", ESP-12F: "false"
+
+packages:
+  me81h: !include common/me81h.yaml
+```
 
 ## Mapa datapointów
 
@@ -40,10 +48,10 @@ Nowy termostat to nowy plik z czterema `substitutions` (`name`, `friendly_name`,
 
 MCU zgłasza `GPIO Configuration: status: pin 14, reset: pin 0`, więc ESPHome sygnalizuje sieć stanem GPIO14 zamiast komendy `WIFI_STATE` przez UART.
 
-- **Oryginalny TYWE3S:** wymaga `inverted: true`. Bez tego panel nie pokazuje WiFi i nie ustawia godziny, bo MCU uważa, że jest offline. Potwierdzone na thermostat04, 2026-11-15.
-- **Wymiana na ESP-12F (biuro):** działa z `inverted: false` (ESPHome 2025.12.5). MCU w biurze raportuje dziwne `pin 2, reset 17`.
+- **Oryginalny TYWE3S:** wymaga `inverted: true`. Bez tego panel nie pokazuje WiFi i nie ustawia godziny, bo MCU uważa, że jest offline. Potwierdzone na sprzęcie (ESPHome 2026.10.2).
+- **Moduł wymieniony na ESP-12F:** działał z `inverted: false` (ESPHome 2025.12.5). Jedna taka sztuka raportowała dziwne `pin 2, reset 17`.
 
-**Uwaga przy aktualizacji do ESPHome ≥ 2026.10:** przy niezgodnym pinie ESPHome i tak steruje pinem z YAML-a, a starsze wersje przechodziły wtedy w „limited mode”. Po aktualizacji biura sprawdź, czy ikonka WiFi nadal działa.
+**Uwaga przy aktualizacji do ESPHome ≥ 2026.10:** przy niezgodnym pinie ESPHome i tak steruje pinem z YAML-a, a starsze wersje przechodziły wtedy w „limited mode”. Po aktualizacji sztuki z ESP-12F sprawdź, czy ikonka WiFi nadal działa.
 
 ## Inne uwagi
 
@@ -55,7 +63,7 @@ MCU zgłasza `GPIO Configuration: status: pin 14, reset: pin 0`, więc ESPHome s
 
 ```bash
 cp secrets.yaml.example secrets.yaml   # uzupełnij
-esphome run termostat04.yaml
+esphome run termostat-salon.yaml
 ```
 
 W Home Assistant (dodatek ESPHome) skopiuj `common/` oraz pliki urządzeń do `/config/esphome/`. Sekrety są w tamtejszym `secrets.yaml`, dopisz `ap_password`.
